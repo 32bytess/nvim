@@ -25,8 +25,23 @@ vim.lsp.config("pylsp", {
 
 vim.lsp.config("gopls", {
 	cmd = { "gopls" },
-	filetypes = { "go" },
-	root_markers = { ".git" },
+	filetypes = { "go", "gomod", "gowork", "gotmpl" },
+	root_markers = { "go.work", "go.mod", ".git" },
+	-- Neovim does not advertise file watching on Linux, so gopls never sees files
+	-- written outside the editor (sqlc generate, go generate) until a restart.
+	capabilities = {
+		workspace = {
+			didChangeWatchedFiles = { dynamicRegistration = true },
+		},
+	},
+	settings = {
+		gopls = {
+			completeUnimported = true,
+			staticcheck = true,
+			analyses = { unusedparams = true, shadow = true },
+			hints = { parameterNames = true, assignVariableTypes = true },
+		},
+	},
 })
 
 vim.lsp.config("*", {
@@ -48,6 +63,7 @@ return {
 	},
 	{
 		"williamboman/mason-lspconfig.nvim",
+		event = "VeryLazy",
 		config = function()
 			require("mason-lspconfig").setup({
 				ensure_installed = { "lua_ls", "stylua", "bashls", "pylsp", "gopls" },
@@ -57,9 +73,10 @@ return {
 	-- none lsp (formatters,linters)
 	{
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
+		event = "VeryLazy",
 		dependencies = { "williamboman/mason.nvim" },
 		opts = {
-			ensure_installed = { "shfmt", "black", "flake8", "shellcheck" },
+			ensure_installed = { "shfmt", "black", "flake8", "shellcheck", "netcoredbg", "goimports", "sql-formatter" },
 		},
 	},
 	{

@@ -41,10 +41,48 @@ vim.keymap.set("n", "<leader>aa", function()
 		title = " ADB WiFi Pair ",
 		title_pos = "center",
 	})
-	vim.fn.termopen("adb-wifi", {
+	vim.fn.jobstart("adb-wifi", {
+		term = true,
 		on_exit = function()
 			vim.api.nvim_win_close(win, true)
 		end,
 	})
 	vim.cmd("startinsert")
 end, { desc = "ADB WiFi QR pair", silent = true })
+
+-- keymaps
+
+vim.keymap.set("i", "jj", "<Esc>")
+
+-- ─── Borrowed from ThePrimeagen (see WIKI.md §11) ───────────────────────────
+
+-- Move the selected lines down / up, re-indenting as they go
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move selection down", silent = true })
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move selection up", silent = true })
+
+-- Join lines without the cursor jumping to the join point
+vim.keymap.set("n", "J", "mzJ`z", { desc = "Join lines (keep cursor)" })
+
+-- Keep the cursor centred when scrolling and stepping through search results
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Half page down (centred)" })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Half page up (centred)" })
+vim.keymap.set("n", "n", "nzzzv", { desc = "Next match (centred)" })
+vim.keymap.set("n", "N", "Nzzzv", { desc = "Previous match (centred)" })
+
+-- Paste over a selection without losing what you yanked ("greatest remap ever")
+vim.keymap.set("x", "<leader>p", [["_dP]], { desc = "Paste, keep register" })
+
+-- Replace the word under the cursor everywhere in the file (type the new word, Enter)
+vim.keymap.set(
+	"n",
+	"<leader>s",
+	[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+	{ desc = "Substitute word under cursor" }
+)
+
+-- Make the current file executable (fresh shell scripts)
+vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { desc = "chmod +x current file", silent = true })
+
+-- Undo history as a tree (Neovim 0.12 ships this; undofile keeps it across restarts)
+vim.cmd.packadd("nvim.undotree")
+vim.keymap.set("n", "<leader>u", "<cmd>Undotree<CR>", { desc = "Undo tree" })

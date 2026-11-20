@@ -9,7 +9,7 @@ function M.smart_format()
 	if ok then
 		local formatters = conform.list_formatters(0)
 		if #formatters > 0 then
-			conform.format({ lsp_fallback = true })
+			conform.format({ lsp_format = "fallback" })
 			has_formatter = true
 		end
 	end

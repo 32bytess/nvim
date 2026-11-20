@@ -17,7 +17,8 @@ local function open_float()
 	})
 	if vim.bo[lazygit_buf].buftype ~= "terminal" then
 		vim.api.nvim_buf_call(lazygit_buf, function()
-			vim.fn.termopen("lazygit", {
+			vim.fn.jobstart("lazygit", {
+				term = true,
 				on_exit = function()
 					lazygit_buf = nil
 				end,

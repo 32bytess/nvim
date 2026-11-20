@@ -20,7 +20,7 @@ function M.new(cmd)
 		})
 		if vim.bo[buf].buftype ~= "terminal" then
 			vim.api.nvim_buf_call(buf, function()
-				vim.fn.termopen(cmd)
+				vim.fn.jobstart(cmd, { term = true })
 			end)
 			vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { buffer = buf, desc = "Exit terminal mode" })
 			vim.keymap.set("t", "<leader><Esc>", "<C-\\><C-n>", { buffer = buf, desc = "Exit terminal mode" })

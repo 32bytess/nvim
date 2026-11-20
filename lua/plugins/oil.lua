@@ -62,6 +62,35 @@ return {
 			})
 			vim.keymap.set("n", "-", "<cmd>Oil<cr>", { desc = "Oil" })
 			vim.keymap.set("n", "<leader>e", oil.toggle_float, { desc = "Float" })
+
+			local stdin_read = false
+			local open_group = vim.api.nvim_create_augroup("oil_open_on_empty", { clear = true })
+			vim.api.nvim_create_autocmd("StdinReadPre", {
+				group = open_group,
+				callback = function()
+					stdin_read = true
+				end,
+			})
+			vim.api.nvim_create_autocmd("VimEnter", {
+				group = open_group,
+				nested = true,
+				callback = function()
+					if
+						stdin_read
+						or vim.fn.argc() ~= 0
+						or #vim.api.nvim_list_uis() == 0
+						or vim.api.nvim_buf_get_name(0) ~= ""
+						or vim.bo.buftype ~= ""
+						or vim.bo.filetype ~= ""
+					then
+						return
+					end
+					if vim.api.nvim_buf_line_count(0) > 1 or vim.api.nvim_buf_get_lines(0, 0, 1, false)[1] ~= "" then
+						return
+					end
+					oil.open()
+				end,
+			})
 		end,
 	},
 }

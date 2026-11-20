@@ -32,10 +32,12 @@ return {
 					end
 					local ft_icon, ft_color = devicons.get_icon_color(filename)
 					local modified = vim.bo[props.buf].modified
+					local palette = require("theme").palette
+					local mod_fg = (palette and palette.orange) or "#d19a66"
 					return {
 						ft_icon and { " ", ft_icon, " ", guibg = "none", guifg = ft_color } or "",
 						{ " " .. filename .. "", guibg = "none" },
-						{ modified and " ● " or " ", guibg = "none", guifg = "#d19a66" },
+						{ modified and " ● " or " ", guibg = "none", guifg = mod_fg },
 					}
 				end,
 			})
@@ -47,14 +49,38 @@ return {
 	{
 		"rose-pine/neovim",
 		name = "rose-pine",
+		lazy = true,
+	},
+	{
+		"catppuccin/nvim",
+		name = "catppuccin",
+		lazy = true,
+		opts = {
+			flavour = "mocha",
+			integrations = {
+				gitsigns = true,
+				telescope = { enabled = true },
+				which_key = true,
+				harpoon = true,
+				blink_cmp = true,
+				native_lsp = { enabled = true },
+			},
+		},
+	},
+	{
+		"ellisonleao/gruvbox.nvim",
+		lazy = true,
 		config = function()
-			vim.cmd("colorscheme rose-pine")
+			require("gruvbox").setup({
+				contrast = "",
+			})
 		end,
 	},
 
 	-- colors
 	{
 		"brenoprata10/nvim-highlight-colors",
+		event = { "BufReadPost", "BufNewFile" },
 		opts = {
 			render = "virtual",
 			virtual_symbol_position = "inline",
